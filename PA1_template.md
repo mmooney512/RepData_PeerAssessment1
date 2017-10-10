@@ -1,21 +1,15 @@
----
-title: 'Reproducible Research: Peer Assignment 1'
-date: "October 10, 2017"
-author: michael.coursera@eipsoftware.com
-output: 
-  html_document: 
-    keep_md: yes
----
+# Reproducible Research: Peer Assignment 1
+michael.coursera@eipsoftware.com  
+October 10, 2017  
 [Github Repository](https://github.com/mmooney512/RepData_PeerAssessment1)
 
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+
 
 ## Loading Required R Libraries 
 
-```{r library, message=FALSE}
+
+```r
 library(dplyr)
 library(lubridate)
 library(ggplot2)
@@ -24,7 +18,8 @@ library(ggplot2)
 
 
 ## Read the Data Set
-```{r load data}
+
+```r
 # set working directory to local directory
 # setwd("~/Documents/coursera/course5_repro_research")
 data_activity <- read.table("activity.csv", header = TRUE, sep=",")
@@ -37,7 +32,8 @@ data_activity <- read.table("activity.csv", header = TRUE, sep=",")
 argument it will put name of the day in the field. (Monday, Tuesday, etc..)
 
 
-```{r preprocess}
+
+```r
 data_activity$date <- as.Date(data_activity$date)
 
 data_activity$Weekday <- wday(data_activity$date, label = TRUE, abbr = FALSE)
@@ -54,7 +50,8 @@ per day
 
 
 Sum the number of steps by each day
-```{r one}
+
+```r
 daily_summary <- data_activity %>% 
 				group_by(date) %>% 
 				summarise(steps = sum(steps))
@@ -62,7 +59,8 @@ daily_summary <- data_activity %>%
 
 
 Calculate the mean and median
-```{r one_a}
+
+```r
 #Part One - a
 daily_summary_mean 		<- mean(daily_summary$steps, na.rm = TRUE)
 daily_summary_median	<- median(daily_summary$steps, na.rm = TRUE)
@@ -70,7 +68,8 @@ daily_summary_median	<- median(daily_summary$steps, na.rm = TRUE)
 
 
 Plot the histogram of the daily count
-```{r one_b}
+
+```r
 #Part One - b
 #part One - c
 hist(daily_summary$steps
@@ -82,6 +81,8 @@ hist(daily_summary$steps
 	 			 )
 	 )
 ```
+
+![](PA1_template_files/figure-html/one_b-1.png)<!-- -->
 
 
 
@@ -99,7 +100,8 @@ contains the maximum number of steps?
 
 
 Summarize by hour and 5-minute increments
-```{r two}
+
+```r
 hourly_summary <- 	data_activity %>% 
 					group_by(interval) %>% 
 					summarise(steps = mean(steps, na.rm=TRUE))
@@ -107,7 +109,8 @@ hourly_summary <- 	data_activity %>%
 
 
 Graph of average number of steps taken, averaged across all days
-```{r two_a}
+
+```r
 #Part Two - a
 with(hourly_summary,
 		plot(interval
@@ -123,16 +126,19 @@ with(hourly_summary,
 axis (1, at=seq(0,2400,by=100),las = 2)
 ```
 
+![](PA1_template_files/figure-html/two_a-1.png)<!-- -->
+
 
 Extract which 5 min interval has highest average
-```{r two_b}
+
+```r
 #Part Two - b
 hourly_summary_max <- hourly_summary[which.max(hourly_summary$steps),]
 ```
 
 The 5 minute interval with the maximum number
-of steps is `r hourly_summary_max$interval`
-with `r round(hourly_summary_max$steps,1)`
+of steps is 835
+with 206.2
 
 
 ***
@@ -152,12 +158,13 @@ the total daily number of steps?
 
 
 
-```{r three_a}
+
+```r
 # Part Three - a
 # count NA values
 missing_values <- sum(is.na(data_activity$steps))
 ```
-The total number of missing values in the data set is `r missing_values`
+The total number of missing values in the data set is 2304
 
 
 
@@ -176,7 +183,8 @@ replace with a value of 0.
 
 
 **Copy the data_activity**
-```{r three_b_one}
+
+```r
 #Part 3 - b.1
 data_activity_imputed <- data_activity
 ```
@@ -185,7 +193,8 @@ data_activity_imputed <- data_activity
 **Summarize by hour and 5-minute increments**
 
 
-```{r three_b_two}
+
+```r
 #Part 3 - b.2
 weekday_hourly_summary <- 	data_activity %>% 
 							group_by(Weekday, interval) %>% 
@@ -198,7 +207,8 @@ weekday_hourly_summary <- 	data_activity %>%
 *if the value is NA replace with the average value*
 
 
-```{r three_b_three}
+
+```r
 #Part 3 - b.3
 data_activity_imputed <- merge(data_activity_imputed
 							   ,weekday_hourly_summary
@@ -219,7 +229,8 @@ data_activity_imputed$steps <- if_else(is.na(data_activity_imputed$steps)
 
 ** Summarize the number of steps by each day with imputed values **
 
-```{r three_d_1}
+
+```r
 #Part 3 - d_1
 daily_summary_imputed <- data_activity_imputed %>% 
 						group_by(date) %>% 
@@ -230,7 +241,8 @@ daily_summary_imputed <- data_activity_imputed %>%
 **Calculate the mean and median with imputed values**
 
 
-```{r three_d_2}
+
+```r
 #Part 3 - d_2
 daily_imputed_mean 		<- mean(daily_summary_imputed$steps, na.rm = TRUE)
 daily_imputed_median	<- median(daily_summary_imputed$steps, na.rm = TRUE)
@@ -240,7 +252,8 @@ daily_imputed_median	<- median(daily_summary_imputed$steps, na.rm = TRUE)
 ** Histogram of the total number of steps taken each day. **
 
 
-```{r three_e}
+
+```r
 #Part 3 - e
 hist(daily_summary$steps
 	 ,main = "Histogram of Total Steps per Day with Imputed Values" 
@@ -252,19 +265,21 @@ hist(daily_summary$steps
 	 )
 ```
 
+![](PA1_template_files/figure-html/three_e-1.png)<!-- -->
+
 
 **The differences between estimated and imputed values:**
 
-Mean: 	`r round(((daily_imputed_mean / daily_summary_mean)-1.0)*100,1)`%
+Mean: 	0.1%
 
-Median:	`r round(((daily_imputed_median / daily_summary_median)-1.0)*100,1)`%
+Median:	2.3%
 
 
 ** What is the impact of imputting missing data on the estimates of the total daily number of steps?**
 
 There is minimal impact. The change in the mean was ~ 1/10%
 
-The change in the median was ~ `r round(((daily_imputed_median / daily_summary_median)-1.0)*100,1)`% which I think is below the level of significance.
+The change in the median was ~ 2.3% which I think is below the level of significance.
 
 
 
@@ -283,7 +298,8 @@ b. Make a panel plot containing a time series plot of the 5-minute interval and 
 
 
 Add a column to the data frame indicating if the day of the week is a weekday or weekend
-```{r four_a}
+
+```r
 #Part 4 - a
 data_activity_imputed <- data_activity_imputed %>%
 						mutate(Weekend = if_else(Weekday %in% c("Sunday", "Saturday")
@@ -293,7 +309,8 @@ data_activity_imputed <- data_activity_imputed %>%
 
 
 Plot showing the difference between weekdays and weekends
-```{r four_b}
+
+```r
 # Part 4 - b
 # Summarise the data by weekday or weekends and 5-minute increments
 hourly_summary_imputed <- 	data_activity_imputed %>% 
@@ -307,10 +324,12 @@ ggplot(hourly_summary_imputed, aes(x=interval,y=steps)) +
     xlab("Hour of the Day") +
     ylab("Average Steps") +
 	ggtitle("Average Daily Activity Pattern by Type of Day")
-
 ```
 
-```{r four_b_2}
+![](PA1_template_files/figure-html/four_b-1.png)<!-- -->
+
+
+```r
 #Part - 4.b 
 avg_steps <- aggregate(hourly_summary_imputed[,3],list(hourly_summary_imputed$Weekend), sum)
 ```
@@ -319,10 +338,10 @@ The plots show that on average the there is a difference in time of day of the a
 The weekends are showing higher average activity per hour.  Even though the weekday 
 activity has a spike in the morning hours.  
 
-Average steps per weekday: `r round(avg_steps[1,2]/1000,1)` thousand
+Average steps per weekday: 10.2 thousand
 
-Average steps per weekend: `r round(avg_steps[2,2]/1000,1)` thousand
+Average steps per weekend: 12.4 thousand
 
-Weekend steps are: `r round((avg_steps[2,2] / avg_steps[1,2] - 1) * 100,1)` % higher.
+Weekend steps are: 21.2 % higher.
 
 ---
